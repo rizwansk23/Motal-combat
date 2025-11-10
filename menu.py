@@ -18,7 +18,7 @@ pygame.display.set_caption("Main Menu")
 
 #game variables
 game_paused = False
-menu_state = "main"
+menu_state = "home"  # home, screen1, screen2, menu, optional_menu 
 
 #define fonts
 font = pygame.font.SysFont("arialblack", 40)
@@ -56,7 +56,7 @@ while run:
 
     screen.fill((52, 78, 91))
 
-    if menu_state == "main":   
+    if menu_state == "home":   
         # draw_text('home page',font,TEXT_COL,100,100)
         image = pygame.image.load('assets/images/background/intro_page.png').convert_alpha()
         image = pygame.transform.smoothscale(image, (SCREEN_WIDTH,SCREEN_HEIGHT))
@@ -78,7 +78,7 @@ while run:
                 if options_button.draw(screen):
                     menu_state = "options"
                 if quit_button.draw(screen):
-                    menu_state="main"
+                    menu_state="home"
             #check if the options menu is open
             if menu_state == "options":
                 #draw the different options buttons
