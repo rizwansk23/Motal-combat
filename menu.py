@@ -1,5 +1,6 @@
 import pygame
 import componenet.button as button
+import character_selection as character_selection
 
 pygame.init()
 
@@ -49,6 +50,9 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x, y))
 
 
+game = character_selection.character_selection()
+
+
 #game loop
 run = True
 while run:
@@ -91,6 +95,10 @@ while run:
                 if back_button.draw(screen):
                     menu_state = "game"
         else:
+            # game.draw(screen)
+                
+            # if game.quit():
+            #     run = False
             draw_text('space for pause the game ',font,TEXT_COL,100,100)
 
   #event handler
