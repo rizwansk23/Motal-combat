@@ -1,6 +1,7 @@
 import pygame
 import componenet.button as button
 import character_selection as character_selection
+import animation 
 
 pygame.init()
 
@@ -51,7 +52,7 @@ def draw_text(text, font, text_col, x, y):
 
 
 game = character_selection.character_selection()
-
+animaet = animation.animation("Evil Wizard 3","Attack",13)
 
 #game loop
 run = True
@@ -99,7 +100,9 @@ while run:
                 
             # if game.quit():
             #     run = False
-            draw_text('space for pause the game ',font,TEXT_COL,100,100)
+
+            animaet.draw(screen)
+            # draw_text('space for pause the game ',font,TEXT_COL,100,100)
 
   #event handler
     for event in pygame.event.get():
@@ -118,4 +121,3 @@ while run:
     pygame.display.update()
 
 pygame.quit()
-

@@ -25,10 +25,10 @@ class character_selection:
         #load images 
         next_img = pygame.image.load("assets/images/icons/next.png").convert_alpha()
         prev_img = pygame.image.load("assets/images/icons/previous.png").convert_alpha()
-        img_1 = pygame.image.load("assets/images/Evil Wizard 3/preview1.png").convert_alpha()
-        img_2 = pygame.image.load("assets/images/Hero Knight/preview1.png").convert_alpha()
-        img_3 = pygame.image.load("assets/images/Huntress/preview1.png").convert_alpha()
-        img_4 = pygame.image.load("assets/images/Martial Hero 3/preview1.png").convert_alpha()
+        img_1 = pygame.image.load("assets/images/character/Evil Wizard 3/preview1.png").convert_alpha()
+        img_2 = pygame.image.load("assets/images/character/Hero Knight/preview1.png").convert_alpha()
+        img_3 = pygame.image.load("assets/images/character/Huntress/preview1.png").convert_alpha()
+        img_4 = pygame.image.load("assets/images/character/Martial Hero 3/preview1.png").convert_alpha()
 
 
         character_1 = image_load(img_1, 0.6, 220,50)

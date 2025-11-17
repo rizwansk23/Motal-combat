@@ -85,7 +85,6 @@ class Fighter:
         if attacking_rect.colliderect(target.rect):
             target.health -= 10
             self.attacking = False
-            print("hit")
 
     def start_attack(self):
         if not self.attack_active:

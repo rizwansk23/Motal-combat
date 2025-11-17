@@ -3,7 +3,7 @@ pygame.init()
 
 class animation:
     def __init__(self,character,action,step):
-        self.character_sheet = pygame.image.load(f'assets/images/{character}/Sprites/{action}.png').convert_alpha()
+        self.character_sheet = pygame.image.load(f'assets/images/character/{character}/Sprites/{action}.png').convert_alpha()
         self.animation_list = []
         self.animation_step = step #13
         self.last_update = pygame.time.get_ticks()
