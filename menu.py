@@ -52,7 +52,7 @@ def draw_text(text, font, text_col, x, y):
 
 
 game = character_selection.character_selection()
-animaet = animation.animation("Evil Wizard 3","Attack",13)
+animaet = animation.animation("Evil Wizard 3","Attack",13,140,140,4)
 
 #game loop
 run = True
@@ -96,12 +96,19 @@ while run:
                 if back_button.draw(screen):
                     menu_state = "game"
         else:
-            # game.draw(screen)
+            game.draw(screen)
                 
-            # if game.quit():
-            #     run = False
+                
+            if game.quit():
+                run = False
 
-            animaet.draw(screen)
+            character = game.get_character()
+            
+            
+          
+
+
+            # animaet.draw(screen,0,0)
             # draw_text('space for pause the game ',font,TEXT_COL,100,100)
 
   #event handler

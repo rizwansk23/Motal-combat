@@ -1,17 +1,18 @@
 import pygame
+import animation 
 
 class Fighter:
     def __init__(self,x,y):
         self.x = x
         self.flip = False
         self.rect = pygame.Rect(x,y,80,180)
+        self.image = animation.animation("Evil Wizard 3","Attack",140,140,13,3.5,100)
         self.vel_y = 0
         self.jump = False
         self.attacking = False
         self.attack_type = 0 
         self.attack_active = False
         self.health = 100
-        self.game_type = 1 # 0 for story mode / 1 for 2v2 mode
 
     def move(self,screen_width,screen_height,surface,target):
 
@@ -25,31 +26,24 @@ class Fighter:
         key = pygame.key.get_pressed()
         
         if self.attacking == False:
-          # moving 
-          if key[pygame.K_d]:
-              dx = SPEED
-          if key[pygame.K_a]:
-              dx = -SPEED
-          # jump
-          if key[pygame.K_w] and self.jump == False:
-              self.vel_y = -15
-              self.jump= True
+            # moving 
+            if key[pygame.K_d]:
+                dx = SPEED
+                # self.image = animation.animation("Evil Wizard 3","Run",140,140,8,4)
+            if key[pygame.K_a]:
+                dx = -SPEED
+            # jump
+            if key[pygame.K_w] and self.jump == False:
+                self.vel_y = -15
+                self.jump= True
           # attack
-          if self.game_type == 0: #for story mode
-              if key[pygame.K_p]  or key[pygame.K_k]:
-                  
-                  if key[pygame.K_p]:
-                      self.attack_type = 1
-                  if key[pygame.K_k]:
-                      self.attack_type = 2
-          elif self.game_type == 1:   # for 2v2 
-              if key[pygame.K_r]  or key[pygame.K_t]:
-                  if key[pygame.K_r]:
+            if key[pygame.K_r]  or key[pygame.K_t]:
+                if key[pygame.K_r]:
                     self.attack(surface,target)
                     self.attack_type = 1
-                  if key[pygame.K_t]:
-                      self.start_attack()
-                      self.attack_type = 2
+                if key[pygame.K_t]:
+                    self.start_attack()
+                    self.attack_type = 2
             
         # apply gravity
         self.vel_y += GRAVITY
@@ -89,20 +83,24 @@ class Fighter:
     def start_attack(self):
         if not self.attack_active:
             direction = -1 if self.flip else 1
-            self.attack_rect = pygame.Rect(self.rect.centerx + (20 * direction),self.rect.centery - 20,50,20)
+            self.attack_rect = pygame.Rect(self.rect.centerx + (20 * direction),self.rect.centery - 55,50,20)
+            self.attack_img = animation.animation("Evil Wizard 3","Moving",50,50,4,3.5,100)
             self.attack_speed = 10 * direction
             self.attack_active = True
+            self.x = self.rect.x
 
     def update_attack(self, surface, target):
-        if self.attack_active and self.attack_rect:
+        if self.attack_active and self.attack_rect and self.attack_img:
             # Move attack
+            self.x += self.attack_speed
             self.attack_rect.x += self.attack_speed
 
             # Draw projectile
-            pygame.draw.rect(surface, (0, 255, 0), self.attack_rect)
+            # pygame.draw.rect(surface, (0,0,0,128), self.attack_rect)
+            self.attack_img.draw(self.x+10,self.rect.y - 60,surface,False)
 
             # Collision check
-            if self.attack_rect.colliderect(target.rect):
+            if  self.attack_rect.colliderect(target.rect):
                 target.health -= 10
                 self.attack_active = False
 
@@ -110,9 +108,11 @@ class Fighter:
             if (self.attack_rect.right < 0 or self.attack_rect.left > surface.get_width()):
                 self.attack_active = False
                 self.attack_rect = None
+                self.attack_img = None
 
 
             
 
     def draw(self,surface):
         pygame.draw.rect(surface,(255,255,0),self.rect)
+        self.image.draw(self.rect.x-200,self.rect.y-160,surface,self.flip)
