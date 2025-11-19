@@ -1,5 +1,6 @@
 import pygame
 from fighter import  Fighter
+from enemy import Enemy
 
 pygame.init()
 
@@ -52,12 +53,27 @@ def draw_health_bar(health , x ,y,):
   pygame.draw.rect(screen,RED , (x,y,300,30))
   pygame.draw.rect(screen,GREEN , (x,y,300 * ratio,30))
 
+CHARACTER_NAME = ['Evil Wizard 3','Hero Knight','Huntress','Martial Hero 3']
+ACTIONS = [['Idle','Run','Fall1','Attack','Take Hit','Death'],['Idle','Run','Jump','Attack1','Attack2','Take Hit','Death']]
+STEPS = [[10,8,6,13,3,18],[11,8,3,7,7,4,11],[8,8,2,5,5,3,8],[10,8,3,7,6,3,11]]
+FRAME_SIZE = [140,180,150,126]
+OFFSET = [[200,160],[290,220],[290,256],[190,105]]
+SCALE=[3.5,3.5,4.5,3.5]
+
+# TEMPORRY VARIABLE
+character = 2
+if character == 0:
+  action = 0
+else:
+  action = 1
 
 # instence of fighter class 
-fighter1 = Fighter(90,190)
-fighter2 = Fighter(600,190)
+fighter1 = Fighter(90,190,False,CHARACTER_NAME[character],ACTIONS[action],STEPS[character],FRAME_SIZE[character],OFFSET[character],SCALE[character])
+fighter2 = Fighter(600,190,True,CHARACTER_NAME[0],ACTIONS[0],STEPS[0],FRAME_SIZE[0],OFFSET[0],SCALE[0])
 
+# enemy = Enemy(600,190,True,character_name[2],actions[0],steps)
 
+player_health = fighter1.health
 
 #game loop
 run = True
@@ -70,6 +86,15 @@ while run:
   draw_ground()
   draw_health_bar(fighter1.health,10,10)
   draw_health_bar(fighter2.health,490,10)
+
+  fighter1.update_animation(screen)
+  fighter2.update_animation(screen)
+
+  # enemy.update_ai(fighter1)
+  # enemy.update_animation()
+  # enemy.draw(screen)
+
+
   fighter1.draw(screen)
   fighter2.draw(screen)
   fighter1.move(SCREEN_WIDTH,SCREEN_HEIGHT,screen,fighter2)
@@ -80,12 +105,14 @@ while run:
 
   #get keypresses
   key = pygame.key.get_pressed()
-  if key[pygame.K_a] and scroll > 0 :
-      if fighter1.x < SCREEN_WIDTH + 10 :
-        scroll -=1
-  if key[pygame.K_d] and scroll < 100:
-    if fighter2.x > 10 :
-      scroll += 1
+
+  if player_health != 0:
+    if key[pygame.K_a] and scroll > 0 :
+        if fighter1.x < SCREEN_WIDTH + 10 :
+          scroll -=  1.5
+    if key[pygame.K_d] and scroll < 100:
+      if fighter2.x > 10 :
+        scroll += 1.5
 
   #event handlers
   for event in pygame.event.get():

@@ -1,18 +1,34 @@
 import pygame
 import animation 
 
+pygame.init()
+
 class Fighter:
-    def __init__(self,x,y):
+    def __init__(self,x,y,flip,character_name,actions,steps,size,offset,scale):
         self.x = x
-        self.flip = False
-        self.rect = pygame.Rect(x,y,80,180)
-        self.image = animation.animation("Evil Wizard 3","Attack",140,140,13,3.5,100)
+        self.y = y
+        self.character_name = character_name
+        self.actions = actions
+        self.steps = steps
+        self.size = size
+        self.offset = offset
+        self.scale = scale
+        self.i = 0
+        self.last_i = self.i
+        self.flip = flip
+        self.rect = pygame.Rect(x,y,100,180)
+        self.image = animation.animation(self.character_name,self.actions[self.i],self.size,self.size,self.steps[self.i],self.scale,100)
         self.vel_y = 0
         self.jump = False
         self.attacking = False
-        self.attack_type = 0 
+        self.attack_type = False
         self.attack_active = False
-        self.health = 100
+        self.health = 50
+        self.running = False
+        self.alive = True
+        self.hit = False
+        self.time = 0
+        self.a = 0
 
     def move(self,screen_width,screen_height,surface,target):
 
@@ -25,25 +41,46 @@ class Fighter:
         # keyboard input 
         key = pygame.key.get_pressed()
         
-        if self.attacking == False:
+        if self.attacking == False and self.alive == True:
             # moving 
             if key[pygame.K_d]:
                 dx = SPEED
-                # self.image = animation.animation("Evil Wizard 3","Run",140,140,8,4)
-            if key[pygame.K_a]:
+                self.running = True
+            elif key[pygame.K_a]:
                 dx = -SPEED
+                self.running = True
+            else:
+                self.running= False
+
             # jump
             if key[pygame.K_w] and self.jump == False:
-                self.vel_y = -15
+                self.vel_y = -25
                 self.jump= True
+                self.running = False
+
           # attack
             if key[pygame.K_r]  or key[pygame.K_t]:
                 if key[pygame.K_r]:
-                    self.attack(surface,target)
-                    self.attack_type = 1
+                    if self.character_name == 'Evil Wizard 3':
+                        self.a = 1
+                        self.start_attack()
+                        self.attack_type = 1
+                    else:
+                        if self.character_name == 'Hero Knight':
+                            self.attack_type = 1
+                            self.attack(target,0.8)
+                        else:
+                            self.attack_type = 1
+                            self.attack(target)
+
                 if key[pygame.K_t]:
-                    self.start_attack()
-                    self.attack_type = 2
+                    if self.character_name == 'Evil Wizard 3':
+                        self.a = 2
+                        self.attack_type = 2
+                        self.start_attack()
+                    else:
+                        self.attack_type = 2
+                        self.attack(target)
             
         # apply gravity
         self.vel_y += GRAVITY
@@ -69,50 +106,132 @@ class Fighter:
         self.rect.x += dx
         self.rect.y += dy
 
+    def update_animation(self,screen):
+        
+        if self.health <= 0:#death
+            self.health = 0
+            self.alive = False
+            if self.character_name == 'Evil Wizard 3':
+                self.i = 5
+            else:
+                self.i = 6
+        elif self.hit:#hit
+            if self.character_name == 'Evil Wizard 3':
+                self.i = 4
+            else:
+                self.i = 5
+        elif self.attacking or self.attack_active:#attack
+            if self.attack_type == 1:
+                self.i = 3
+            elif self.attack_type == 2:
+                if self.character_name == 'Evil Wizard 3':
+                    self.i = 3
+                else:
+                    self.i = 4 
+        elif self.running == True:#running
+            self.i = 1
+        elif self.jump == True:#jump
+            self.i = 2 
+        else:
+            self.i = 0
 
-    def attack(self,surface,target):
-        # self.attacking = True
+ 
+        # IF ACTION CHANGED => RELOAD ANIMATION
+        if self.i != self.last_i:
+            self.image = animation.animation(self.character_name,self.actions[self.i],self.size, self.size,self.steps[self.i],self.scale,100)
+            self.last_i = self.i
 
-        attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 1.5 * self.rect.width, self.rect.height)
-        pygame.draw.rect(surface,(0,255,0),attacking_rect)
-
-        if attacking_rect.colliderect(target.rect):
-            target.health -= 10
+        # Attack animation finished
+        if self.i in [3,4,5]  and self.image.frame == self.image.animation_step - 1:
             self.attacking = False
+            self.hit = False
+
+        # check death animation run one time 
+        if self.alive == False:
+            img = pygame.image.load('assets/images/icons/defeat.png')
+            img = pygame.transform.scale(img,(10*12,10*12))
+            screen.blit(img,(100,100))
+            if self.image.frame == len(self.image.animation_list) - 1:
+                self.image = animation.animation(self.character_name,self.actions[self.i],self.size, self.size,self.steps[self.i],self.scale,100)
+                self.image.frame = len(self.image.animation_list) - 1
+
+        # if self.i in [4,5] and self.image.frame == self.image.animation_step - 1:
+        #     self.hit = False
+
+
+    def attack(self, target,Range = 1.8):
+        if not self.attacking:
+
+            attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip),self.rect.y,Range * self.rect.width,self.rect.height)
+            # pygame.draw.rect(surface, (0,255,0), attacking_rect)
+
+            # try:
+            #     if attacking_rect.colliderect(target.rect):
+            #         target.health -= 10  
+            # finally:   
+            #     self.attacking = True   
+
+
+            self.attacking = True 
+            
+            if attacking_rect.colliderect(target.rect):
+                target.health -= 10
+                target.hit = True
+
 
     def start_attack(self):
         if not self.attack_active:
             direction = -1 if self.flip else 1
-            self.attack_rect = pygame.Rect(self.rect.centerx + (20 * direction),self.rect.centery - 55,50,20)
-            self.attack_img = animation.animation("Evil Wizard 3","Moving",50,50,4,3.5,100)
+
+            self.attack_rect = pygame.Rect(self.rect.centerx + (20 * direction),self.rect.centery - 55,50, 20)
+
             self.attack_speed = 10 * direction
             self.attack_active = True
-            self.x = self.rect.x
-
-    def update_attack(self, surface, target):
-        if self.attack_active and self.attack_rect and self.attack_img:
-            # Move attack
-            self.x += self.attack_speed
-            self.attack_rect.x += self.attack_speed
-
-            # Draw projectile
-            # pygame.draw.rect(surface, (0,0,0,128), self.attack_rect)
-            self.attack_img.draw(self.x+10,self.rect.y - 60,surface,False)
-
-            # Collision check
-            if  self.attack_rect.colliderect(target.rect):
-                target.health -= 10
-                self.attack_active = False
-
-            # Out of screen
-            if (self.attack_rect.right < 0 or self.attack_rect.left > surface.get_width()):
-                self.attack_active = False
-                self.attack_rect = None
-                self.attack_img = None
-
-
+            self.last_time = pygame.time.get_ticks()
             
 
+            if self.a == 1:
+                # Load projectile animation only ONCE ❗
+                self.attack_img = animation.animation("Evil Wizard 3","Explode",50, 50,7,3.5,140)
+            elif self.a == 2:
+                self.attack_img = animation.animation("Evil Wizard 3","Moving",50, 50,4,3.5,140)
+
+
+            # projectile position
+            self.attack_x = self.attack_rect.x
+            self.attack_y = self.attack_rect.y
+
+
+    def update_attack(self, surface, target):
+        if not self.attack_active:
+            return
+
+        current_time = pygame.time.get_ticks()
+
+        # Start movement after 1 second delay
+        if current_time - self.last_time >= 1000:
+
+            # Move projectile
+            self.attack_x += self.attack_speed
+            self.attack_rect.x += self.attack_speed
+
+            if self.attack_img:
+            # Draw projectile animation
+                self.attack_img.draw(self.attack_x,self.rect.y - 60,surface,False)
+
+        # Collision
+        if self.attack_rect.colliderect(target.rect):
+            target.health -= 10
+            self.attack_active = False
+
+        # Out of screen
+        if self.attack_rect.left > surface.get_width() or self.attack_rect.right < 0:
+            self.attack_active = False
+            self.attack_rect = None
+            self.attack_img = None
+
+            
     def draw(self,surface):
-        pygame.draw.rect(surface,(255,255,0),self.rect)
-        self.image.draw(self.rect.x-200,self.rect.y-160,surface,self.flip)
+        # pygame.draw.rect(surface,(255,255,0),self.rect)
+        self.image.draw(self.rect.x- self.offset[0],self.rect.y- self.offset[1],surface,self.flip)
+

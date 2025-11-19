@@ -108,7 +108,7 @@ while run:
           
 
 
-            # animaet.draw(screen,0,0)
+            # animaet.draw(screen,)
             # draw_text('space for pause the game ',font,TEXT_COL,100,100)
 
   #event handler

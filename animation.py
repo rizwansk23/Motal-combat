@@ -22,9 +22,10 @@ class animation:
         image.set_colorkey((0,0,0))
         
         return image
-    
-    def draw(self, x : int, y : int, screen : str, flip : bool):
 
+
+    def draw(self, x : int, y : int, screen : str, flip : bool):
+        
         current_time = pygame.time.get_ticks()
 
         if current_time - self.last_update >= self.animation_cooldown:
@@ -33,15 +34,10 @@ class animation:
 
             if self.frame >= len(self.animation_list):
                 self.frame = 0
-                
-        
-        image = self.animation_list[self.frame]
-
-        if flip:
-            image = pygame.transform.flip(image, flip, False)
-            image.set_colorkey((0,0,0))
 
 
-        screen.blit(image,(x,y))
+        image = pygame.transform.flip(self.animation_list[self.frame], flip, False)
+        image.set_colorkey((0,0,0))
+        screen.blit(image, (x, y))
 
 
