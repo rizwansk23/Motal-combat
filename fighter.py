@@ -13,17 +13,18 @@ class Fighter:
         self.size = size
         self.offset = offset
         self.scale = scale
+        self.cooldown = 100
         self.i = 0
         self.last_i = self.i
         self.flip = flip
         self.rect = pygame.Rect(x,y,100,180)
-        self.image = animation.animation(self.character_name,self.actions[self.i],self.size,self.size,self.steps[self.i],self.scale,100)
+        self.image = animation.animation(self.character_name,self.actions[self.i],self.size,self.size,self.steps[self.i],self.scale,self.cooldown)
         self.vel_y = 0
         self.jump = False
         self.attacking = False
         self.attack_type = False
         self.attack_active = False
-        self.health = 50
+        self.health = 100
         self.running = False
         self.alive = True
         self.hit = False
@@ -81,6 +82,16 @@ class Fighter:
                     else:
                         self.attack_type = 2
                         self.attack(target)
+
+            if key[pygame.K_m]:
+                if self.character_name in ['Huntress','Martial Hero 3']:
+                    if self.character_name == 'Huntress':
+                        self.attack_type = 3
+                        self.a = 3
+                        self.start_attack()
+                    else:
+                        self.attack_type = 3
+                        self.attack(target)
             
         # apply gravity
         self.vel_y += GRAVITY
@@ -113,38 +124,52 @@ class Fighter:
             self.alive = False
             if self.character_name == 'Evil Wizard 3':
                 self.i = 5
+                self.cooldown = 150
             else:
                 self.i = 6
+                self.cooldown = 150
         elif self.hit:#hit
             if self.character_name == 'Evil Wizard 3':
                 self.i = 4
+                self.cooldown = 220
             else:
                 self.i = 5
+                self.cooldown = 220
         elif self.attacking or self.attack_active:#attack
             if self.attack_type == 1:
                 self.i = 3
+                self.cooldown = 130
             elif self.attack_type == 2:
                 if self.character_name == 'Evil Wizard 3':
                     self.i = 3
                 else:
                     self.i = 4 
+                    self.cooldown = 130
+            elif self.attack_type == 3:
+                if self.character_name == 'Huntress':
+                    self.i = 7
+                    self.cooldown = 170
+                else:
+                    self.i = 7
+                    self.cooldown = 30
         elif self.running == True:#running
             self.i = 1
         elif self.jump == True:#jump
             self.i = 2 
         else:
             self.i = 0
+            self.cooldown = 100
 
  
         # IF ACTION CHANGED => RELOAD ANIMATION
         if self.i != self.last_i:
-            self.image = animation.animation(self.character_name,self.actions[self.i],self.size, self.size,self.steps[self.i],self.scale,100)
+            self.image = animation.animation(self.character_name,self.actions[self.i],self.size, self.size,self.steps[self.i],self.scale,self.cooldown)
             self.last_i = self.i
 
         # Attack animation finished
-        if self.i in [3,4,5]  and self.image.frame == self.image.animation_step - 1:
+        if self.i in [3,4,7]  and self.image.frame == self.image.animation_step - 1:
             self.attacking = False
-            self.hit = False
+            # self.hit = False
 
         # check death animation run one time 
         if self.alive == False:
@@ -155,23 +180,15 @@ class Fighter:
                 self.image = animation.animation(self.character_name,self.actions[self.i],self.size, self.size,self.steps[self.i],self.scale,100)
                 self.image.frame = len(self.image.animation_list) - 1
 
-        # if self.i in [4,5] and self.image.frame == self.image.animation_step - 1:
-        #     self.hit = False
+        if self.i in [4,5] and self.image.frame == self.image.animation_step - 1:
+            self.hit = False
 
 
     def attack(self, target,Range = 1.8):
         if not self.attacking:
 
             attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip),self.rect.y,Range * self.rect.width,self.rect.height)
-            # pygame.draw.rect(surface, (0,255,0), attacking_rect)
-
-            # try:
-            #     if attacking_rect.colliderect(target.rect):
-            #         target.health -= 10  
-            # finally:   
-            #     self.attacking = True   
-
-
+            
             self.attacking = True 
             
             if attacking_rect.colliderect(target.rect):
@@ -193,8 +210,13 @@ class Fighter:
             if self.a == 1:
                 # Load projectile animation only ONCE ❗
                 self.attack_img = animation.animation("Evil Wizard 3","Explode",50, 50,7,3.5,140)
+                self.arrowx = 60
             elif self.a == 2:
                 self.attack_img = animation.animation("Evil Wizard 3","Moving",50, 50,4,3.5,140)
+            elif self.a == 3:
+                self.attack_img = animation.animation("Huntress","Spear move",60, 20,4,3.5,100)
+                self.arrowx = 30
+
 
 
             # projectile position
@@ -217,7 +239,7 @@ class Fighter:
 
             if self.attack_img:
             # Draw projectile animation
-                self.attack_img.draw(self.attack_x,self.rect.y - 60,surface,False)
+                self.attack_img.draw(self.attack_x,self.rect.y - self.arrowx,surface,False) #30 for huntress and 60 for wizard
 
         # Collision
         if self.attack_rect.colliderect(target.rect):

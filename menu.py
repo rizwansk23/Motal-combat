@@ -52,7 +52,7 @@ def draw_text(text, font, text_col, x, y):
 
 
 game = character_selection.character_selection()
-animaet = animation.animation("Evil Wizard 3","Attack",13,140,140,4)
+# animaet = animation.animation("Evil Wizard 3","Attack",13,140,140,4)
 
 #game loop
 run = True

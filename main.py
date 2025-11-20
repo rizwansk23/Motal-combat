@@ -54,14 +54,14 @@ def draw_health_bar(health , x ,y,):
   pygame.draw.rect(screen,GREEN , (x,y,300 * ratio,30))
 
 CHARACTER_NAME = ['Evil Wizard 3','Hero Knight','Huntress','Martial Hero 3']
-ACTIONS = [['Idle','Run','Fall1','Attack','Take Hit','Death'],['Idle','Run','Jump','Attack1','Attack2','Take Hit','Death']]
-STEPS = [[10,8,6,13,3,18],[11,8,3,7,7,4,11],[8,8,2,5,5,3,8],[10,8,3,7,6,3,11]]
+ACTIONS = [['Idle','Run','Fall1','Attack','Take Hit','Death'],['Idle','Run','Jump','Attack1','Attack2','Take Hit','Death','Attack3']]
+STEPS = [[10,8,6,13,3,18],[11,8,3,7,7,4,11],[8,8,2,5,5,3,8,7],[10,8,3,7,6,3,11,9]]
 FRAME_SIZE = [140,180,150,126]
 OFFSET = [[200,160],[290,220],[290,256],[190,105]]
 SCALE=[3.5,3.5,4.5,3.5]
 
 # TEMPORRY VARIABLE
-character = 2
+character = 3
 if character == 0:
   action = 0
 else:
