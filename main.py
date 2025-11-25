@@ -60,8 +60,15 @@ FRAME_SIZE = [140,180,150,126]
 OFFSET = [[200,160],[290,220],[290,256],[190,105]]
 SCALE=[3.5,3.5,4.5,3.5]
 
+ENEMY_NAME = ['warrior','wizard']
+ENEMY_STEPS = [[10,8,3,7,7,3,7,8],[8,8,2,8,8,3,7]]
+ENEMY_FRAME_SIZE = [162,250]
+ENEMY_OFFSET = [[270,225],[350,355]]
+ENEMY_SCALE = [4,3.2]
+
 # TEMPORRY VARIABLE
-character = 3
+ENEMY = 0
+character = 0
 if character == 0:
   action = 0
 else:
@@ -69,11 +76,11 @@ else:
 
 # instence of fighter class 
 fighter1 = Fighter(90,190,False,CHARACTER_NAME[character],ACTIONS[action],STEPS[character],FRAME_SIZE[character],OFFSET[character],SCALE[character])
-fighter2 = Fighter(600,190,True,CHARACTER_NAME[0],ACTIONS[0],STEPS[0],FRAME_SIZE[0],OFFSET[0],SCALE[0])
+fighter2 = Enemy(600,190,True,ENEMY_NAME[ENEMY],ACTIONS[1],ENEMY_STEPS[ENEMY],ENEMY_FRAME_SIZE[ENEMY],ENEMY_OFFSET[ENEMY],ENEMY_SCALE[ENEMY])
 
 # enemy = Enemy(600,190,True,character_name[2],actions[0],steps)
 
-player_health = fighter1.health
+
 
 #game loop
 run = True
@@ -99,6 +106,7 @@ while run:
   fighter2.draw(screen)
   fighter1.move(SCREEN_WIDTH,SCREEN_HEIGHT,screen,fighter2)
   # fighter2.move(SCREEN_WIDTH,SCREEN_HEIGHT,screen,fighter1)
+  fighter2.ai_move(SCREEN_WIDTH,fighter1)
 
 
   fighter1.update_attack(screen,fighter2)
@@ -106,13 +114,14 @@ while run:
   #get keypresses
   key = pygame.key.get_pressed()
 
-  if player_health != 0:
+  if fighter1.health > 0 and fighter2.health > 0:
     if key[pygame.K_a] and scroll > 0 :
         if fighter1.x < SCREEN_WIDTH + 10 :
           scroll -=  1.5
     if key[pygame.K_d] and scroll < 100:
       if fighter2.x > 10 :
         scroll += 1.5
+
 
   #event handlers
   for event in pygame.event.get():

@@ -1,88 +1,84 @@
-import pygame
+
 from fighter import Fighter
+import random
 
 class Enemy(Fighter):
 
-    def __init__(self, x, y,flip, character_name, actions, steps):
-        super().__init__(x, y,flip, character_name, actions, steps)
+    def __init__(self, x, y,flip, character_name, actions, steps,size,offset,scale):
+        super().__init__(x, y,flip, character_name, actions, steps,size,offset,scale)
 
-        self.vision_range = 300       # kitni door tak player ko dekhega
-        self.attack_range = 80        # kitni door tak attack karega
-        self.speed = 2                # AI movement speed
-        self.idle_timer = 0           # random movement ke liye
+        self.speed = 5               # AI movement speed
 
-    # -----------------------------
-    #     ENEMY AI MAIN FUNCTION
-    # -----------------------------
-    def update_ai(self, target):
 
+    def ai_move(self,screen_width,target):
+
+
+        dx = 0
+        dy = 0
+
+        #find the distance of player and enemey
         distance_x = target.rect.centerx - self.rect.centerx
         distance_y = target.rect.centery - self.rect.centery
 
         abs_dist = abs(distance_x)
+      
 
-        # -----------------------
-        #  ENEMY PLAYER KO DEKHEGA
-        # -----------------------
-        if abs_dist < self.vision_range:  # player detect ho gaya
-
-            # Face the player
-            self.flip = distance_x < 0
-
-            # -------------------
-            #  ATTACK CONDITION
-            # -------------------
-            if abs_dist < self.attack_range:
-                self.running = False
-                self.attack_ai(target)
-                return
-
-            # -------------------
-            #  MOVE TOWARD PLAYER
-            # -------------------
-            self.running = True
-
-            if distance_x > 0:
-                self.rect.x += self.speed     # right move
-            else:
-                self.rect.x -= self.speed     # left move
-
+        # move enemey
+        if abs_dist >= 300:
+            if self.flip:
+                dx = -self.speed
+                self.running = True
+            if self.flip == False:
+                dx = self.speed
+                self.running = True
         else:
-            # -----------------------
-            #  IDLE / RANDOM MOVEMENT
-            # -----------------------
             self.running = False
-            self.random_idle_movement()
 
-    # ------------------------------------
-    #     ENEMY ATTACK (Auto Attack)
-    # ------------------------------------
-    def attack_ai(self, target):
-        if not self.attacking:           # cool-down ke baad attack
-            self.attacking = True
-            self.frame = 0               # attack animation start se
-            target.health -= 5
 
-    # --------------------------
-    #  RANDOM IDLE WALKING
-    # --------------------------
-    def random_idle_movement(self):
+        # attacking 
+        if target.alive and self.alive:
+            if abs_dist <= 200 and self.attack_cooldown == 0 and not self.attacking:
 
-        self.idle_timer += 1
+                if self.character_name  == 'warrior':
+                    self.attack_type = random.choice([1,2,3])
+                    if target.health < 20:
+                        self.attack_type = 3
+                else:
+                    self.attack_type = random.choice([1,2])
 
-        if self.idle_timer > 120:  # 2 sec baad random direction change
-            self.idle_timer = 0
+                
+                if self.attack_type == 1:
+                    self.attack(target,8,10)
+                    if self.attacking:
+                        self.attack_cooldown = 50
 
-            import random
-            move = random.choice([-1, 0, 1])  # left, idle, right
+                elif self.attack_type == 2 or self.attack_type == 3:
+                    self.attack(target,1.8,10)
+                    if self.attacking:
+                        self.attack_cooldown = 50
+                
+                self.attack_cooldown = 20
 
-            if move == -1:
-                self.rect.x -= 1
-                self.flip = True
-                self.running = True
-            elif move == 1:
-                self.rect.x += 1
-                self.flip = False
-                self.running = True
-            else:
-                self.running = False
+
+        # ensure player face each other
+        if target.rect.centerx > self.rect.centerx:
+            self.flip = False
+        else:
+            self.flip = True
+        
+        #apply attack cooldown
+        if self.attack_cooldown > 0:
+            self.attack_cooldown -= 1
+
+
+        if self.rect.left + dx <= 0:
+            dx = -self.rect.left
+        if self.rect.right + dx >= screen_width:
+            dx = screen_width - self.rect.right
+
+        
+        self.rect.x += dx
+        self.rect.y += dy
+
+
+
