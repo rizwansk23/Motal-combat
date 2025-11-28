@@ -34,9 +34,9 @@ class character_selection:
         img_2 = pygame.image.load("assets/images/character/Hero Knight/preview1.png").convert_alpha()
         img_3 = pygame.image.load("assets/images/character/Huntress/preview1.png").convert_alpha()
         img_4 = pygame.image.load("assets/images/character/Martial Hero 3/preview1.png").convert_alpha()
-        background = pygame.image.load("assets/images/background/stage3.png").convert_alpha()
-        platform = pygame.image.load("assets/images/background/ground.png").convert_alpha()
-        width = platform.get_width()
+        background = pygame.image.load("assets/images/background/stage4.jpg").convert_alpha()
+        # platform = pygame.image.load("assets/images/background/ground.png").convert_alpha()
+        # width = platform.get_width()
 
 
         #create a image instances
@@ -44,10 +44,10 @@ class character_selection:
         character_2 = image_load(img_2, 1, 10, -100)
         character_3 = image_load(img_3, 0.8, 100, -120)
         character_4 = image_load(img_4, 1, 50, -70)
-        self.background = image_load(background,0.45,0,0)
-        self.platform = []
-        for i in range(0,3):
-            self.platform.append(image_load(platform,1,i * width,340))
+        self.background = image_load(background,1.3,0,-100)
+        # self.platform = []
+        # for i in range(0,3):
+        #     self.platform.append(image_load(platform,1,i * width,340))
 
 
 
@@ -61,9 +61,9 @@ class character_selection:
         self.character_name = ['Evil Wizard','Hero Knight','Hunter','Martial Hero']
         self.i=0
 
-    def ground(self,screen):
-        for n in range(0,3):
-            self.platform[n].draw(screen)
+    # def ground(self,screen):
+    #     for n in range(0,3):
+    #         self.platform[n].draw(screen)
               
               
     def draw(self,screen):
@@ -71,7 +71,7 @@ class character_selection:
 
         # draw background
         self.background.draw(screen)
-        self.ground(screen)
+        # self.ground(screen)
 
         self.clock.tick(self.FPS)
 
@@ -87,12 +87,13 @@ class character_selection:
                     self.i = len(self.character_list) - 1  
 
         # draw character name
-        text.draw_text(self.character_name[self.i],10,10,screen)
 
         #draw character in frame 
         try:
+            text.draw_text(self.character_name[self.i],10,10,screen)
             self.character_list[self.i].draw(screen)
         except IndexError:
+            text.draw_text(self.character_name[0],10,10,screen)
             self.character_list[0].draw(screen)
 
         
@@ -118,6 +119,10 @@ class character_selection:
                         self.i -= 1
                         if self.i == -1:
                             self.i = len(self.character_list) - 1  
+
+                if event.key == pygame.K_RETURN:
+                     self.charcter = self.i
+                     
 
 
     def quit(self):

@@ -141,7 +141,7 @@ class Fighter:
             else:
                 self.i = 5
                 self.cooldown = 220
-            self.attack_cooldown = 30
+            # self.attack_cooldown = 30
         elif self.attacking or self.attack_active:#attack
             if self.attack_type == 1:
                 self.i = 3
