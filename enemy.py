@@ -1,4 +1,5 @@
-
+import pygame
+import time
 from fighter import Fighter
 import random
 
@@ -8,6 +9,10 @@ class Enemy(Fighter):
         super().__init__(x, y,flip, character_name, actions, steps,size,offset,scale)
 
         self.speed = 5               # AI movement speed
+        self.counter = 0
+        self.health = 100
+
+        self.last_time = pygame.time.get_ticks()      
 
 
     def ai_move(self,screen_width,target):
@@ -15,25 +20,45 @@ class Enemy(Fighter):
 
         dx = 0
         dy = 0
+        self.can_move = False
 
         #find the distance of player and enemey
         distance_x = target.rect.centerx - self.rect.centerx
-        distance_y = target.rect.centery - self.rect.centery
-
         abs_dist = abs(distance_x)
-      
+
+        current_time = pygame.time.get_ticks()
+
+        # --- Timer 4 sec wait ---
+        if self.counter == 0:
+            if current_time - self.last_time >= 3000:  # 3 second
+                self.counter += 1
+                self.last_time = current_time
+
+        if self.counter in [1,2,3,4]:
+            if current_time - self.last_time >= 500:  # half second
+                self.counter -= 1
+                self.last_time = current_time   
+                if self.counter == 0:
+                    self.counter = 0
+            self.can_move = True
+        else:
+            self.can_move = False
+
 
         # move enemey
-        if abs_dist >= 300:
-            if self.flip:
-                dx = -self.speed
-                self.running = True
-            if self.flip == False:
-                dx = self.speed
+        if self.can_move:      
+            if abs_dist >= 100 and self.alive:
+                if self.flip:
+                    dx = -self.speed
+                else:
+                    dx = self.speed
                 self.running = True
         else:
             self.running = False
 
+
+
+      
 
         # attacking 
         if target.alive and self.alive:
@@ -50,14 +75,14 @@ class Enemy(Fighter):
                 if self.attack_type == 1:
                     self.attack(target,8,10)
                     if self.attacking:
-                        self.attack_cooldown = 50
+                        self.attack_cooldown = 100
 
                 elif self.attack_type == 2 or self.attack_type == 3:
                     self.attack(target,1.8,10)
                     if self.attacking:
-                        self.attack_cooldown = 50
+                        self.attack_cooldown = 100
                 
-                self.attack_cooldown = 20
+                self.attack_cooldown = 50
 
 
         # ensure player face each other
@@ -79,6 +104,8 @@ class Enemy(Fighter):
         
         self.rect.x += dx
         self.rect.y += dy
+
+        self.can_move = False
 
 
 

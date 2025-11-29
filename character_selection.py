@@ -23,7 +23,7 @@ class character_selection:
         self.run = False
         self.clock = pygame.time.Clock()
         self.FPS = 60
-        self.charcter = 0
+        self.charcter = None
 
 
         #load images 
@@ -59,7 +59,8 @@ class character_selection:
         # game variable
         self.character_list = [character_1,character_2,character_3,character_4]
         self.character_name = ['Evil Wizard','Hero Knight','Hunter','Martial Hero']
-        self.i=0
+        self.i = 0
+
 
     # def ground(self,screen):
     #     for n in range(0,3):
@@ -130,5 +131,9 @@ class character_selection:
     
     def get_character(self):
         return  self.charcter
+    
+    def reset(self):
+        self.charcter = None
+
     
 
