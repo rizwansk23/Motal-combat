@@ -1,17 +1,18 @@
 import pygame
 pygame.init()
 
+
 class animation:
-    def __init__(self,character,action,step):
+    def __init__(self,character,action,width,height,step,scale,cooldown):
         self.character_sheet = pygame.image.load(f'assets/images/character/{character}/Sprites/{action}.png').convert_alpha()
         self.animation_list = []
         self.animation_step = step #13
         self.last_update = pygame.time.get_ticks()
-        self.animation_cooldown = 100
+        self.animation_cooldown = cooldown
         self.frame = 0
 
         for x in range(self.animation_step):
-            self.animation_list.append(self.get_image(self.character_sheet,x,140,140,4))
+            self.animation_list.append(self.get_image(self.character_sheet,x,width,height,scale))
 
 
     def get_image(self,sheet,frame,width,height,scale):
@@ -21,11 +22,10 @@ class animation:
         image.set_colorkey((0,0,0))
         
         return image
-    
-    def draw(self,screen):
 
-        screen.fill((202, 228, 241))
 
+    def draw(self, x : int, y : int, screen : str, flip : bool):
+        
         current_time = pygame.time.get_ticks()
 
         if current_time - self.last_update >= self.animation_cooldown:
@@ -35,4 +35,9 @@ class animation:
             if self.frame >= len(self.animation_list):
                 self.frame = 0
 
-        screen.blit(self.animation_list[self.frame],(0,0))
+
+        image = pygame.transform.flip(self.animation_list[self.frame], flip, False)
+        image.set_colorkey((0,0,0))
+        screen.blit(image, (x, y))
+
+
