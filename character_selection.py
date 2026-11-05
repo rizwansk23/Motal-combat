@@ -6,7 +6,7 @@ import componenet.text as text
 
 
 class image_load:
-    def __init__(self,image,scale:int,x:int,y:int):
+    def __init__(self,image,scale:float,x:int,y:int):
         width= image.get_width()
         height = image.get_height()
         self.scale = scale
